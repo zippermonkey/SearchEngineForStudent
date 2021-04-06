@@ -1,5 +1,7 @@
 package hust.cs.javacourse.search.parse;
 
+import hust.cs.javacourse.search.index.AbstractTermTuple;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -44,4 +46,13 @@ public abstract class AbstractTermTupleScanner extends AbstractTermTupleStream {
         }
     }
 
+    /**
+     * 获得下一个三元组
+     *
+     * @return: 下一个三元组；如果到了流的末尾，返回null
+     */
+    @Override
+    public AbstractTermTuple next() {
+        return null;
+    }
 }

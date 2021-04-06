@@ -1,6 +1,8 @@
 package hust.cs.javacourse.search.parse;
 
 
+import hust.cs.javacourse.search.index.AbstractTermTuple;
+
 /**
  * <pre>
  * 抽象类AbstractTermTupleFilter类型是AbstractTermTupleStream的子类,里面包含另一个
@@ -32,5 +34,15 @@ public abstract class AbstractTermTupleFilter extends AbstractTermTupleStream{
     @Override
     public void close(){
         input.close();
+    }
+
+    /**
+     * 获得下一个三元组
+     *
+     * @return: 下一个三元组；如果到了流的末尾，返回null
+     */
+    @Override
+    public AbstractTermTuple next() {
+        return null;
     }
 }

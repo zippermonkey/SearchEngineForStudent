@@ -105,7 +105,7 @@ public class Index extends AbstractIndex {
      *
      * @param out :输出流对象
      */
-    @Override
+//    @Override
     public void writeObject(ObjectOutputStream out) {
 
     }
@@ -115,7 +115,7 @@ public class Index extends AbstractIndex {
      *
      * @param in ：输入流对象
      */
-    @Override
+//    @Override
     public void readObject(ObjectInputStream in) {
 
     }

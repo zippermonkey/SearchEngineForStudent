@@ -3,6 +3,7 @@ package hust.cs.javacourse.search.parse.impl;
 import hust.cs.javacourse.search.index.AbstractTermTuple;
 import hust.cs.javacourse.search.index.impl.TermTuple;
 import hust.cs.javacourse.search.parse.AbstractTermTupleFilter;
+import hust.cs.javacourse.search.parse.AbstractTermTupleStream;
 import hust.cs.javacourse.search.util.Config;
 
 import java.io.*;
@@ -24,7 +25,7 @@ public class LengthTermTupleFilter extends AbstractTermTupleFilter {
      *
      * @param input：Filter的输入，类型为TermTupleScanner
      */
-    public LengthTermTupleFilter(TermTupleScanner input) {
+    public LengthTermTupleFilter(AbstractTermTupleStream input) {
         super(input);
     }
 
