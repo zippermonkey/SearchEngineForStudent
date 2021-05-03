@@ -1,5 +1,6 @@
 package hust.cs.javacourse.search.index.impl;
 
+import hust.cs.javacourse.search.index.AbstractTerm;
 import hust.cs.javacourse.search.index.AbstractTermTuple;
 
 /**
@@ -18,9 +19,15 @@ public class TermTuple extends AbstractTermTuple {
     public  TermTuple(){
         term = new Term();
     }
+
     public TermTuple(String content, int pos){
         term = new Term(content);
         curPos = pos;
+    }
+
+    public TermTuple(AbstractTerm term, int pos){
+        this.term = term;
+        this.curPos = pos;
     }
     /**
      * 判断二个三元组内容是否相同
@@ -44,6 +51,6 @@ public class TermTuple extends AbstractTermTuple {
      */
     @Override
     public String toString() {
-        return "content: \t"+term.toString()+"\nfreq: \t\t"+ freq +"\npos: \t\t"+ curPos;
+        return "\ncontent: \t"+term.toString()+"\nfreq: \t\t"+ freq +"\npos: \t\t"+ curPos;
     }
 }

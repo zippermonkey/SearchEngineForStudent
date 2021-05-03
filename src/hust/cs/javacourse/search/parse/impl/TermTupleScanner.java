@@ -11,6 +11,7 @@ import hust.cs.javacourse.search.util.StringSplitter;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TermTupleScanner extends AbstractTermTupleScanner {
     /**
@@ -47,6 +48,7 @@ public class TermTupleScanner extends AbstractTermTupleScanner {
                 buf.append(allContent).append("\n"); //reader.readLine())返回的字符串会去掉换行符，因此这里要加上
             }
             allContent = buf.toString().trim(); //去掉最后一个多的换行符
+            allContent = allContent.toLowerCase(Locale.ROOT);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -64,7 +66,7 @@ public class TermTupleScanner extends AbstractTermTupleScanner {
         splitter.setSplitRegex(Config.STRING_SPLITTER_REGEX);
         parts = splitter.splitByRegex(allContent);
         for (int i = 0; i < parts.size(); i++) {
-            termTuples.add(new TermTuple(parts.get(i), i + 1));
+            termTuples.add(new TermTuple(parts.get(i), i));
         }
     }
 
@@ -88,21 +90,8 @@ public class TermTupleScanner extends AbstractTermTupleScanner {
         }
     }
 
-    /**
-     * 关闭流
-     */
-    @Override
-    public void close() {
-        try {
-            input.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
     public static void main(String[] argv) {
-        String fileName = Config.DOC_DIR + "1.txt";
+        String fileName = Config.DOC_DIR + "2.txt";
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
@@ -110,6 +99,7 @@ public class TermTupleScanner extends AbstractTermTupleScanner {
             e.printStackTrace();
         }
         TermTupleScanner s = new TermTupleScanner(reader);
+        System.out.println(s.position);
         AbstractTermTuple iter = s.next();
         while (iter != null) {
             System.out.println(iter.toString() + "\n");

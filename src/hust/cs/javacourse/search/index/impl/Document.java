@@ -21,8 +21,7 @@ public class Document extends AbstractDocument {
      * @param docPath：文档绝对路径
      */
     public Document(int docId, String docPath) {
-        this.docId = docId;
-        this.docPath = docPath;
+        super(docId, docPath);
     }
 
     /**
@@ -33,9 +32,7 @@ public class Document extends AbstractDocument {
      * @param tuples         三元组列表
      */
     public Document(int docId, String docPath, List<AbstractTermTuple> tuples) {
-        this.docId = docId;
-        this.docPath = docPath;
-        this.tuples = tuples;
+        super(docId, docPath, tuples);
     }
 
     /**
@@ -95,12 +92,9 @@ public class Document extends AbstractDocument {
      */
     @Override
     public void addTuple(AbstractTermTuple tuple) {
-        // todo: 快速判断重复
-        this.tuples.add(tuple);
-        LinkedHashSet<AbstractTermTuple> set = new LinkedHashSet<>(this.tuples.size());
-        set.addAll(this.tuples);
-        this.tuples.clear();
-        this.tuples.addAll(set);
+        if(!this.tuples.contains(tuple)){
+            this.tuples.add(tuple);
+        }
     }
 
     /**

@@ -7,6 +7,8 @@ import hust.cs.javacourse.search.parse.AbstractTermTupleFilter;
 import hust.cs.javacourse.search.parse.AbstractTermTupleScanner;
 import hust.cs.javacourse.search.parse.AbstractTermTupleStream;
 import hust.cs.javacourse.search.parse.impl.LengthTermTupleFilter;
+import hust.cs.javacourse.search.parse.impl.PatternTermTupleFilter;
+import hust.cs.javacourse.search.parse.impl.StopWordTermTupleFilter;
 import hust.cs.javacourse.search.parse.impl.TermTupleScanner;
 import hust.cs.javacourse.search.util.Config;
 
@@ -26,14 +28,13 @@ public class DocumentBuilder extends AbstractDocumentBuilder {
      */
     @Override
     public AbstractDocument build(int docId, String docPath, AbstractTermTupleStream termTupleStream) {
-        // todo 感觉有特殊情况没有考虑
-        List<AbstractTermTuple> tuples = new ArrayList<>();
+        AbstractDocument document = new Document(docId, docPath);
         AbstractTermTuple itr = termTupleStream.next();
         while (itr != null) {
-            tuples.add(itr);
+            document.addTuple(itr);
             itr = termTupleStream.next();
         }
-        return new Document(docId, docPath, tuples);
+        return document;
     }
 
     /**
@@ -49,14 +50,20 @@ public class DocumentBuilder extends AbstractDocumentBuilder {
      */
     @Override
     public AbstractDocument build(int docId, String docPath, File file) {
+        AbstractDocument document = null;
+        AbstractTermTupleStream ts = null;
         try {
-            AbstractTermTupleStream scanner = new TermTupleScanner(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
-            AbstractTermTupleStream lengthFilter = new LengthTermTupleFilter(scanner);
-            return build(docId, docPath, lengthFilter);
+            ts = new TermTupleScanner(new BufferedReader(new InputStreamReader(new FileInputStream(file))));
+            ts = new StopWordTermTupleFilter(ts);   //再加上停用词过滤器
+            ts = new PatternTermTupleFilter(ts);    //再加上正则表达式过滤器
+            ts = new LengthTermTupleFilter(ts);     //再加上单词长度过滤器
+            document = build(docId, docPath, ts);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } finally {
+            ts.close();
         }
-        return null;
+        return document;
     }
 
     /**

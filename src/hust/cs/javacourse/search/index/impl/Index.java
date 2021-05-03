@@ -1,18 +1,17 @@
 package hust.cs.javacourse.search.index.impl;
 
-import hust.cs.javacourse.search.index.AbstractDocument;
-import hust.cs.javacourse.search.index.AbstractIndex;
-import hust.cs.javacourse.search.index.AbstractPostingList;
-import hust.cs.javacourse.search.index.AbstractTerm;
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Set;
+import hust.cs.javacourse.search.index.*;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * AbstractIndex的具体实现类
  */
 public class Index extends AbstractIndex {
+    public Index() {
+    }
+
     /**
      * 返回索引的字符串表示
      *
@@ -20,7 +19,15 @@ public class Index extends AbstractIndex {
      */
     @Override
     public String toString() {
-        return null;
+
+        StringBuilder str = new StringBuilder();
+        // docIdtoDocpath
+        str.append(docIdToDocPathMapping.toString()).append("\n");
+
+        for (AbstractTerm term : termToPostingListMapping.keySet()) {
+            str.append(term.toString()).append(" ----> ").append(termToPostingListMapping.get(term).toString()).append("\n");
+        }
+        return str + "\n";
     }
 
     /**
@@ -30,6 +37,19 @@ public class Index extends AbstractIndex {
      */
     @Override
     public void addDocument(AbstractDocument document) {
+        this.docIdToDocPathMapping.put(document.getDocId(), document.getDocPath());
+        Map<AbstractTerm, List<Integer>> map = new HashMap<>();
+        for (AbstractTermTuple termTuple : document.getTuples()) {
+            if (map.get(termTuple.term) == null) map.put(termTuple.term, new ArrayList<Integer>());
+            map.get(termTuple.term).add(termTuple.curPos);
+        }
+        // Update
+        for (AbstractTerm term : map.keySet()) {
+            if (this.termToPostingListMapping.get(term) == null)
+                this.termToPostingListMapping.put(term, new PostingList());
+            this.termToPostingListMapping.get(term).add(
+                    new Posting(document.getDocId(), map.get(term).size(), map.get(term)));
+        }
 
     }
 
@@ -41,7 +61,12 @@ public class Index extends AbstractIndex {
      */
     @Override
     public void load(File file) {
-
+        try {
+            ObjectInputStream input = new ObjectInputStream(new FileInputStream((file)));
+            readObject(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -52,7 +77,12 @@ public class Index extends AbstractIndex {
      */
     @Override
     public void save(File file) {
-
+        try {
+            ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file));
+            writeObject(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -63,7 +93,7 @@ public class Index extends AbstractIndex {
      */
     @Override
     public AbstractPostingList search(AbstractTerm term) {
-        return null;
+        return this.termToPostingListMapping.get(term);
     }
 
     /**
@@ -73,7 +103,7 @@ public class Index extends AbstractIndex {
      */
     @Override
     public Set<AbstractTerm> getDictionary() {
-        return null;
+        return this.termToPostingListMapping.keySet();
     }
 
     /**
@@ -86,7 +116,12 @@ public class Index extends AbstractIndex {
      */
     @Override
     public void optimize() {
-
+        for (AbstractPostingList postingList : this.termToPostingListMapping.values()) {
+            postingList.sort();
+            for (int i = 0; i < postingList.size(); i++) {
+                postingList.get(i).sort();
+            }
+        }
     }
 
     /**
@@ -97,7 +132,7 @@ public class Index extends AbstractIndex {
      */
     @Override
     public String getDocName(int docId) {
-        return null;
+        return this.docIdToDocPathMapping.get(docId);
     }
 
     /**
@@ -105,9 +140,14 @@ public class Index extends AbstractIndex {
      *
      * @param out :输出流对象
      */
-//    @Override
+    @Override
     public void writeObject(ObjectOutputStream out) {
-
+        try {
+            out.writeObject(this.termToPostingListMapping);
+            out.writeObject(this.docIdToDocPathMapping);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -115,8 +155,16 @@ public class Index extends AbstractIndex {
      *
      * @param in ：输入流对象
      */
-//    @Override
+    @Override
     public void readObject(ObjectInputStream in) {
-
+        try {
+            this.termToPostingListMapping = (Map<AbstractTerm, AbstractPostingList>) in.readObject();
+            this.docIdToDocPathMapping = (Map<Integer, String>) in.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        this.optimize();
     }
 }

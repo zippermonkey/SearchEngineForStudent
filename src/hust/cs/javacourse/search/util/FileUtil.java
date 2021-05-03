@@ -125,7 +125,7 @@ public class FileUtil {
         FileUtil.write(s,fileName2);
 
         //列出指定目录下所有文件
-        String dirName = Config.PROJECT_HOME_DIR + "/javadoc";
+        String dirName = Config.DOC_DIR;
         List<String> fileNames = FileUtil.list(dirName);
         for(String p: fileNames){
             System.out.println(p);
@@ -134,7 +134,7 @@ public class FileUtil {
         System.out.println("----------------");
         //列出指定目录下所有.html文件
         String dirName1 = Config.PROJECT_HOME_DIR + "/javadoc";
-        List<String> fileNames1 = FileUtil.list(dirName,".html");
+        List<String> fileNames1 = FileUtil.list(dirName1,".html");
         for(String p: fileNames1){
             System.out.println(p);
         }
